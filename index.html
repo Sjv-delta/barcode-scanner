@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barcode Scanner</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    video {
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid #444;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Scan Barcode</h2>
+  <video id="preview"></video>
+  <input type="text" id="barcodeResult" placeholder="Scanned barcode will appear here" readonly />
+
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+  <script>
+    const selectedDeviceId = null;
+    const codeReader = new ZXing.BrowserMultiFormatReader();
+    const previewElem = document.getElementById('preview');
+    const resultElem = document.getElementById('barcodeResult');
+
+    codeReader
+      .listVideoInputDevices()
+      .then((videoInputDevices) => {
+        const firstDeviceId = videoInputDevices[0].deviceId;
+        codeReader.decodeFromVideoDevice(firstDeviceId, previewElem, (result, err) => {
+          if (result) {
+            resultElem.value = result.text;
+            // Optional: auto-copy to clipboard
+            navigator.clipboard.writeText(result.text).catch(console.error);
+          }
+        });
+      })
+      .catch((err) => console.error(err));
+  </script>
+</body>
+</html>
